@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mishbot 3.0: Web Edition: Electric Boogaloo: We ESI now!</title>
+  </head>
+  <body>
+    <header>
+      <h1>Anomic Force status</h1>
+    </header>
+    <h3>{{numContracts}} outstanding contracts containing:</h3>
+    <ul>
+      <li>{{teams}} Anomic Teams ({{teamsISK}}mil ISK)</li>
+      <li>{{serps}} Serpentis Agents ({{serpsISK}}mil ISK)</li>
+      <li>{{agents}} Angel/Sansha Agents ({{agentsISK}}mil ISK)</li>
+      <li>{{unknown}} Unclassified ({{unknownISK}}mil ISK)</li>
+    </ul>
+    {{#if oldest}}
+    <p>Oldest contract issued {{#if days}}{{days}}d {{/if}}{{#if hours}}{{hours}}h {{/if}}{{minutes}}m ago. </p>
+    {{/if}}
+  </body>
+</html>

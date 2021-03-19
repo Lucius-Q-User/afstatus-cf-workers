@@ -1,0 +1,15 @@
+name = "afstatus-manijak"
+account_id = "ea9c56ea35b4c45283161ef432a71c9a"
+workers_dev = true
+route = ""
+zone_id = ""
+type = "webpack"
+webpack_config = "webpack.config.js"
+
+[[kv_namespaces]]
+binding = "AFSTATUS_KV"
+id = "70c68ec9757f49d99bc4b5ea56ebf5fd"
+preview_id = "70c68ec9757f49d99bc4b5ea56ebf5fd"
+
+[triggers]
+crons = ["*/30 * * * *"]
