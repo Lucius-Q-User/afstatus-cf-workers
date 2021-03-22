@@ -158,6 +158,10 @@ async function updateSite(clientId, site) {
 }
 
 async function handleScheduled() {
+    const date = new Date();
+    if (date.getUTCHours() == 11 && date.getUTCMinutes() < 20) {
+        return;
+    }
     const config = await AFSTATUS_KV.get("_Zconfig", "json");
     const promises = [];
     for (const site of config.sites) {
