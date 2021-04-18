@@ -66,26 +66,23 @@ async function makeAuthenticator(clientId, refreshToken) {
     const body = await response.json();
     return function(opts) {
         if (!('headers' in opts)) {
-            opts.headers = {};
+            opts.headers = new Headers();
         }
-        opts.headers.Authorization = 'Bearer ' + body.access_token;
+        opts.headers.set('Authorization', 'Bearer ' + body.access_token);
         return opts;
     };
 }
 
-function getCharacterContractsAll(characterId, authenticator) {
+function getEntityContractsAll(entityType, entityId, authenticator) {
     const urlGenerator = function(page) {
-        return 'https://esi.evetech.net/v1/characters/' + characterId + '/contracts/?page=' + page;
+        return 'https://esi.evetech.net/v1/' + entityType + 's/' + entityId + '/contracts/?page=' + page;
     };
     return getAllPages(urlGenerator, authenticator({}));
 }
 
-const CLIENT_ID = '165c4ad849f5432a9aa3d13ffbfc57dd';
-
-
-async function makeTemplateArgs(clientId, characterId, refreshToken) {
-    const authenticator = await makeAuthenticator(CLIENT_ID, refreshToken);
-    const contracts = await getCharacterContractsAll(characterId, authenticator);
+async function makeTemplateArgs(clientId, entityType, entityId, refreshToken) {
+    const authenticator = await makeAuthenticator(clientId, refreshToken);
+    const contracts = await getEntityContractsAll(entityType, entityId, authenticator);
 
     let oldest = null;
     let numContracts = 0;
@@ -106,7 +103,7 @@ async function makeTemplateArgs(clientId, characterId, refreshToken) {
         if (contract.type != 'item_exchange') {
             continue;
         }
-        if (contract.assignee_id != characterId) {
+        if (contract.assignee_id != entityId) {
             continue;
         }
         if (new Date(contract.date_expired) < now) {
@@ -141,10 +138,12 @@ async function makeTemplateArgs(clientId, characterId, refreshToken) {
 async function handleRequest(request) {
     const domain = new URL(request.url).hostname.split('.')[0];
     const templateArgs = await AFSTATUS_KV.get(domain, 'json');
-    const diff = Math.floor((new Date() - new Date(templateArgs.oldest)) / 60000);
-    templateArgs.minutes = diff % 60;
-    templateArgs.hours = Math.floor(diff / 60) % 24;
-    templateArgs.days = Math.floor(diff / 1440);
+    if (templateArgs.oldest) {
+        const diff = Math.floor((new Date().valueOf() - new Date(templateArgs.oldest).valueOf()) / 60000);
+        templateArgs.minutes = diff % 60;
+        templateArgs.hours = Math.floor(diff / 60) % 24;
+        templateArgs.days = Math.floor(diff / 1440);
+    }
     return new Response(template(templateArgs), {
         headers: {
             "content-type": "text/html;charset=UTF-8"
@@ -153,7 +152,7 @@ async function handleRequest(request) {
 }
 
 async function updateSite(clientId, site) {
-    const data = await makeTemplateArgs(clientId, site.characterId, site.refreshToken);
+    const data = await makeTemplateArgs(clientId, site.entityType, site.entityId, site.refreshToken);
     await AFSTATUS_KV.put(site.url, JSON.stringify(data));
 }
 

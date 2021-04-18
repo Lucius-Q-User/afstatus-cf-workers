@@ -19,10 +19,10 @@ module.exports = {
         plugins: [],
     },
     mode: 'production',
-    target: "webworker",
+    target: 'webworker',
     module: {
         rules: [
-            { test: /\.handlebars$/, loader: "handlebars-loader" }
+            { test: /\.handlebars$/, loader: 'handlebars-loader' }
         ]
     }
 }

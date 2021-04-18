@@ -1,4 +1,4 @@
-name = "afstatus-manijak"
+name = "afstatus"
 account_id = "ea9c56ea35b4c45283161ef432a71c9a"
 workers_dev = true
 route = ""
